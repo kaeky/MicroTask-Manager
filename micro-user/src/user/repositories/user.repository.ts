@@ -10,6 +10,9 @@ export class UserRepository {
     @InjectRepository(UserEntity)
     private userRepository: Repository<UserEntity>,
   ) {}
+
+  public findOne = this.userRepository.findOne.bind(this.userRepository);
+
   public async createUser(
     userDto: CreateUserDto,
     auth0Id: string,
