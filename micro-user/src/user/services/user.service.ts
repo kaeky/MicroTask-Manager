@@ -2,16 +2,20 @@ import { Injectable } from '@nestjs/common';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
 import { UserRepository } from '../repositories/user.repository';
-import { EventEmitter } from 'typeorm/browser/platform/BrowserPlatformTools';
+import { EventEmitter2 } from '@nestjs/event-emitter';
+import { NEW_USER } from '../constants/user.constant';
 
 @Injectable()
 export class UserService {
   constructor(
     private readonly userRepository: UserRepository,
-    private readonly eventEmitter: EventEmitter,
+    private readonly eventEmitter: EventEmitter2,
   ) {}
   async create(createUserDto: CreateUserDto) {
-    const idAuth0 = console.log('createUserDto', createUserDto);
+    const idAuth0: any = await this.eventEmitter
+      .emitAsync(NEW_USER, createUserDto)
+      .then((result) => result[0].identities[0].user_id);
+
     return await this.userRepository.createUser(createUserDto, idAuth0);
   }
 
