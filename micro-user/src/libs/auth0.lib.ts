@@ -1,10 +1,12 @@
-import { BadRequestException, Inject, Injectable } from '@nestjs/common';
+import { Inject, Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { auth0Config } from '../config/auth0.config';
 import { firstValueFrom } from 'rxjs';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { Cache } from 'cache-manager';
 import { CreateUserDto } from '../user/dto/create-user.dto';
+import { UpdateUserDto } from '../user/dto/update-user.dto';
+import { UserEntity } from '../user/entities/user.entity';
 
 @Injectable()
 export class Auth0Lib {
@@ -60,7 +62,6 @@ export class Auth0Lib {
   public async createUser(user: CreateUserDto) {
     const { email, firstName, lastName, password } = user;
     const accessToken = await this.getApiToken();
-    const connection2 = 'Username-Password-Authentication';
 
     const form = {
       email,
@@ -68,7 +69,7 @@ export class Auth0Lib {
       family_name: !!lastName?.length ? lastName : ' ',
       name: `${firstName} ${lastName}`,
       password,
-      connection: connection2,
+      connection: 'Username-Password-Authentication',
     };
 
     return await this.request('POST', `/api/v2/users`, form, {
@@ -77,7 +78,7 @@ export class Auth0Lib {
     });
   }
 
-  public async changeUserPassword(userId: string, password: string) {
+  public async changeUserPassword(user: UserEntity, password: string) {
     const accessToken = await this.getApiToken();
 
     const form = {
@@ -85,21 +86,37 @@ export class Auth0Lib {
       connection: 'Username-Password-Authentication',
     };
 
-    const { statusCode = 200, ...response } = await this.request(
+    return await this.request(
       'PATCH',
-      `/api/v2/users/auth0|${userId}`,
+      `/api/v2/users/auth0|${user.auth0Id}`,
       form,
       {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${accessToken}`,
       },
     );
+  }
 
-    if (statusCode !== 200) {
-      throw new BadRequestException(response.message);
-    }
+  public async updateUser(user: UserEntity, updateUserDto: UpdateUserDto) {
+    const accessToken = await this.getApiToken();
 
-    return { statusCode, ...response };
+    const form = {
+      email: updateUserDto.email,
+      given_name: updateUserDto.firstName,
+      family_name: updateUserDto.lastName,
+      name: `${updateUserDto.firstName} ${updateUserDto.lastName}`,
+      connection: 'Username-Password-Authentication',
+    };
+
+    return await this.request(
+      'PATCH',
+      `/api/v2/users/auth0|${user.auth0Id}`,
+      form,
+      {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken}`,
+      },
+    );
   }
 
   public async findUserByEmail(email: string) {

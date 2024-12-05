@@ -19,4 +19,12 @@ export class UserRepository {
   ): Promise<UserEntity> {
     return this.userRepository.save({ ...userDto, auth0Id });
   }
+
+  public async updateUser(
+    user: UserEntity,
+    updateUserDto: any,
+    auth0Id?: string,
+  ): Promise<UserEntity> {
+    return this.userRepository.save({ ...user, ...updateUserDto, auth0Id });
+  }
 }
