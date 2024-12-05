@@ -1,73 +1,84 @@
+# NestJS Microservices Starter Project
+
 <p align="center">
   <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo_text.svg" width="320" alt="Nest Logo" /></a>
 </p>
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
-
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
-
 ## Description
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+This repository contains a starter setup for two microservices built using the [NestJS](https://github.com/nestjs/nest)
+framework:
 
-## Installation
+- **Users Microservice**
+- **Tasks Microservice**
+
+Each microservice is independent, scalable, and designed for server-side applications.
+
+## Authentication
+This project uses Auth0 for authentication. Auth0 simplifies and centralizes authentication management with features such as:
+
+- **Pre-built User Interfaces**: Quick setup for login, registration, and password reset screens.
+- **Scalability**: Handles high traffic with ease.
+- **Security**: Implements industry-standard security protocols such as OAuth2 and OpenID Connect.
+- **Customizable Rules**: Allows customization of user authentication flows.
+
+## Opportunities for Improvement
+
+- ### Redis for Microservices Communication
+  - **Low Latency**: Redis operates in-memory, ensuring quick message processing.
+  - **Pub/Sub Mechanism**: Allows for decoupled communication between microservices.
+- ### Microservice Gateway
+  -  **Unified Entry Point**: Simplifies client communication by routing all requests through the gateway.
+  -  **Load Balancing**: Improves distribution of requests across microservices.
+  -  **Security**: Centralized authentication and authorization.
+
+## Database Setup
+
+### Step 1: Create a PostgreSQL Database with Docker
+
+Run the following command to set up a PostgreSQL database instance using Docker:
 
 ```bash
-$ npm install
+docker run -d --restart always \
+  --name <CustomNameContainer> \
+  -e POSTGRES_PASSWORD=<CustomPsword> \
+  -e PGDATA=/var/lib/postgresql/data/pgdata \
+  -v /c/Postgresql/volumes/inlaze/data:/var/lib/postgresql/data/ \
+  -p 5433:5432 postgres
 ```
-
-## Running the app
-
+### Step 2: Connect to the PostgreSQL Database
+Once the Docker container is running, connect to the PostgreSQL instance using a client such as psql or a database management tool. Create a database named inlaze or any other preferred name:
 ```bash
-# development
-$ npm run start
-
-# watch mode
-$ npm run start:dev
-
-# production mode
-$ npm run start:prod
+CREATE DATABASE inlaze;
 ```
 
-## Test
-
+### Step 3: Clone the Repository
+Clone the repository to your local machine:
 ```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
+git clone https://github.com/kaeky/MicroTask-Manager.git
 ```
+#### The repository contains two microservices:
+- **Users Microservice**
+  - This microservice is responsible for managing user accounts and auth.
+- **Tasks Microservice**
+  - This microservice is responsible for managing tasks.
 
-## Support
+Navigate to each microservice directory to configure and run it.
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+### Step 4: Environment Variables
+Each microservice requires its own .env file. In the root directory of each microservice, create a .env file and add the following environment variables like the .env.example file.
+### Step 5: Running the Microservices
+Navigate to the respective microservice folder and use the following commands:
+```bash
+# Install dependencies
+npm install
 
-## Stay in touch
+# Run migrations
+npm run migration:run
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+# Run in development mode
+npm run start:dev
 
-## License
-
-Nest is [MIT licensed](LICENSE).
+# Run in production mode
+npm run start:prod
+```
