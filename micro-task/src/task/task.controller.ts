@@ -6,37 +6,60 @@ import {
   Patch,
   Param,
   Delete,
+  UseGuards,
 } from '@nestjs/common';
 import { TaskService } from './services/task.service';
 import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
+import { AuthGuard } from '../auth/guards/jwt-auth.guard';
+import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { UserPayloadDto } from '../auth/dto/user-payload.dto';
 
 @Controller('task')
+@UseGuards(AuthGuard)
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
   @Post()
-  create(@Body() createTaskDto: CreateTaskDto) {
-    return this.taskService.create(createTaskDto);
+  createTask(
+    @CurrentUser() user: UserPayloadDto,
+    @Body() createTaskDto: CreateTaskDto,
+  ) {
+    if (!createTaskDto.userId) {
+      createTaskDto.userId = user.id;
+    }
+    return this.taskService.createTask(createTaskDto);
   }
 
   @Get()
-  findAll() {
-    return this.taskService.findAll();
+  findAllTasks() {
+    return this.taskService.findAllTasks();
   }
 
-  @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.taskService.findOne(+id);
+  @Get('user')
+  findAllTasksByUser(@CurrentUser() user: UserPayloadDto) {
+    return this.taskService.findAllTasksByUser(user);
   }
 
   @Patch(':id')
-  update(@Param('id') id: string, @Body() updateTaskDto: UpdateTaskDto) {
-    return this.taskService.update(+id, updateTaskDto);
+  updateTask(
+    @Param('id') id: string,
+    @Body() updateTaskDto: UpdateTaskDto,
+    @CurrentUser() user: UserPayloadDto,
+  ) {
+    if (!updateTaskDto.userId) {
+      updateTaskDto.userId = user.id;
+    }
+    return this.taskService.updateTask(+id, updateTaskDto);
+  }
+
+  @Patch(':id/revert')
+  revertStatusTask(@Param('id') id: string) {
+    return this.taskService.revertStatusTask(+id);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.taskService.remove(+id);
+  removeTask(@Param('id') id: string) {
+    return this.taskService.removeTask(+id);
   }
 }

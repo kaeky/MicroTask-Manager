@@ -26,6 +26,11 @@ export class UserController {
     return this.userService.create(createUserDto);
   }
 
+  @Get('/all')
+  findAllUsers() {
+    return this.userService.findAll();
+  }
+
   @Get('/profile')
   findCurrentUser(@CurrentUser() user: UserEntity) {
     return this.userService.findCurrentUser(user);

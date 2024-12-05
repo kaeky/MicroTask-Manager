@@ -12,6 +12,7 @@ export class UserRepository {
   ) {}
 
   public findOne = this.userRepository.findOne.bind(this.userRepository);
+  public find = this.userRepository.find.bind(this.userRepository);
 
   public async createUser(
     userDto: CreateUserDto,

@@ -1,26 +1,35 @@
 import { Injectable } from '@nestjs/common';
 import { CreateTaskDto } from '../dto/create-task.dto';
 import { UpdateTaskDto } from '../dto/update-task.dto';
+import { TaskRepository } from '../repositories/task.repository';
+import { UserPayloadDto } from '../../auth/dto/user-payload.dto';
 
 @Injectable()
 export class TaskService {
-  create(createTaskDto: CreateTaskDto) {
-    return 'This action adds a new task';
+  constructor(private readonly taskRepository: TaskRepository) {}
+  createTask(createTaskDto: CreateTaskDto) {
+    return this.taskRepository.createTask(createTaskDto);
   }
 
-  findAll() {
-    return `This action returns all task`;
+  findAllTasks() {
+    return this.taskRepository.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} task`;
+  findAllTasksByUser(user: UserPayloadDto) {
+    return this.taskRepository.findAllTasksByUser(user.id);
   }
 
-  update(id: number, updateTaskDto: UpdateTaskDto) {
-    return `This action updates a #${id} task`;
+  async updateTask(id: number, updateTaskDto: UpdateTaskDto) {
+    const { status } = await this.taskRepository.getCurrentStatus(id);
+    return this.taskRepository.updateTask(id, updateTaskDto, status);
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} task`;
+  revertStatusTask(id: number) {
+    return this.taskRepository.revertStatusTask(id);
+  }
+
+  async removeTask(id: number) {
+    await this.taskRepository.removeTask(id);
+    return { message: 'OK' };
   }
 }

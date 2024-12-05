@@ -24,6 +24,9 @@ export class UserService {
     return user;
   }
 
+  public async findAll(): Promise<UserEntity[]> {
+    return await this.userRepository.find({ where: { status: true } });
+  }
   public async findByAuth0Id(auth0Id: string): Promise<UserEntity> {
     const user = await this.userRepository.findOne({
       where: { auth0Id, status: true },
