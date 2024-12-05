@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
         matrix:
-            service: [ 'micro-tasks', 'micro-user']
+            service: [ 'micro-task', 'micro-user']
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-node@v3
