@@ -1,0 +1,31 @@
+name: Run On Pull Request
+
+on:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  lint:
+    name: Lint Microservices
+    runs-on: ubuntu-latest
+    strategy:
+        matrix:
+            service: [ 'micro-tasks', 'micro-user']
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Install dependencies
+        run: |
+          cd ${{ matrix.service }}
+          npm ci
+
+      - name: Lint code
+        run: |
+          cd ${{ matrix.service }}
+          npm run lint
